@@ -21,13 +21,18 @@ We propose **RePaMed**, a **pathology-aware latent diffusion framework** that in
 
 The key idea is to align **region-level MRI representations with diagnostic report semantics**, and incorporate the aligned representations into a **diffusion-based reconstruction model**.
 
+<p align="center">
+<img src="doc/fig2.png" width="85%">
+</p>
+
 ---
 
 ## Framework
 
 <p align="center">
-<img src="docs/fig2.png" width="85%">
+<img src="doc/fig3.png" width="85%">
 </p>
+
 
 
 
