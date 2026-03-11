@@ -33,9 +33,133 @@ The key idea is to align **region-level MRI representations with diagnostic repo
 <img src="doc/fig3.png" width="85%">
 </p>
 
+---
+
+RePaMed consists of two key components:
+
+### 1. RePaAlign
+
+A **region-aware image–text alignment module** that aligns brain MRI structures with diagnostic report semantics.
+
+Key techniques:
+
+- Structure-wise representation pooling
+- Anatomical region masking
+- Targeted negative sampling
+- Contrastive alignment between MRI regions and report descriptions
+
+This step produces **semantically aligned representations**.
+
+---
+
+### 2. RePaDiff
+
+A **latent diffusion-based enhancement model** that integrates semantic guidance during reconstruction.
+
+Key techniques:
+
+- Latent diffusion enhancement
+- Curriculum-based semantic conditioning
+- Progressive integration of pathology-aware features
+
+This allows the model to enhance MRI images while preserving clinically relevant structures.
+
+---
+
+## Features
+
+- Pathology-aware MRI enhancement
+- MRI–report multimodal alignment
+- Region-guided representation learning
+- Diffusion-based reconstruction
+- Designed for **low-field brain MRI enhancement**
+
+---
+
+## Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/D0ngZhang/RePaMed.git
+cd RePaMed
+```
+
+Install dependencies
+
+```bash
+conda create -n repamed python=3.9
+conda activate repamed
+pip install -r requirements.txt
+```
+
+## Dataset Preparation
+
+## Testing
+
+During inference, each low-field MRI volume is first resampled to a fixed resolution and decomposed into axial 2D slices.  
+For each slice, the model extracts:
+
+- structural conditioning features via the low-field encoder, and
+- semantic context features via the semantic encoder.
+
+These conditions are fed into a DDIM-based latent diffusion sampler to generate a high-field-like latent representation, which is then decoded by the VAE decoder into the reconstructed slice. The reconstructed slices are stacked back into a 3D volume and saved as synthesized T1/T2 NIfTI files.
+
+### Testing Data Preparation
+
+The testing script expects each subject to contain both low-field (LF) and high-field (HF) MRI scans for two modalities: **T1** and **T2**.  
+All volumes must be stored in **NIfTI format (.nii.gz)**.
+
+### Directory Structure
+
+All subjects should be organized in the same folder:
+
+```text
+test_dataset/
+├── subject_001_HF_T1.nii.gz
+├── subject_001_HF_T2.nii.gz
+├── subject_001_LF_T1.nii.gz
+├── subject_001_LF_T2.nii.gz
+├── subject_002_HF_T1.nii.gz
+├── subject_002_HF_T2.nii.gz
+├── subject_002_LF_T1.nii.gz
+└── subject_002_LF_T2.nii.gz
+```
+
+### Pretrained Model
+
+We provide pretrained checkpoints for the RePaMed model, VAE, and semantic encoder.
+
+## Pretrained Checkpoints
+
+| Model | Description | Download |
+|------|-------------|---------|
+| RePaMed | Model for the entire framework | Google Drive |
+| VAE | Model for VAE to train latent diffusion | [Google Drive](https://drive.google.com/file/d/1rlwd1mVBoEg_LXMdIhk8qL4PUj87MUAw/view?usp=sharing) |
+| RepaAlign | Model for RePaAlign to align reports and images | [Google Drive](https://drive.google.com/file/d/1L4S0YLl9dyW9AyIpArMO06xqbH9hOv8V/view?usp=sharing) |
+
+### Checkpoint Structure
+
+After downloading, place the RePaMed checkpoint under: 'saved_models/'
 
 
+```bash
+python test.py \
+  --dataset_test_path /path/to/test_data \
+  --diffusion_ckpt saved_models/RePaMed.ckpt \
+  --save_root /path/to/save_outputs \
+  --S 50 \
+  --eta 0.0 \
+  --device cuda
+```
 
+### Notes
+
+- The model performs **slice-wise inference**. Each 3D volume is decomposed into axial slices before diffusion-based reconstruction.
+- The output will be saved as synthesized high-field MRI volumes:
+**Syn_T1.nii.gz**
+**Syn_T2.nii.gz**
+for each subject.
 
 # Supplementary Material  
 
@@ -45,29 +169,105 @@ The key idea is to align **region-level MRI representations with diagnostic repo
 
 ### Table S1. Dataset characteristics across sites
 
-| | Training & Validation | | | Testing | |
-|---|---|---|---|---|---|
-| Hospital | PLA General | Guizhou Electrical | Raohe County | PLA General | Beian Central |
-| No. MRIs | 80,222 | 1,230 | 485 | 1,392 | 54 |
-| No. patients | 68,754 | 922 | 485 | 1,392 | 54 |
-| Field strength (T) | 3.0 | 0.4 | 0.35 | 3.0 / 0.3–0.4 | 3.0 / 0.3 |
-| Time | 2018–2023 | 2021–2024 | 2018–2024 | 2023 | 2025 |
-| Patient age (y) | 56.9 ± 18 | 55.4 ± 14 | N/A | 58.3 ± 15 | 59.5 ± 6 |
-| Male (%) | 49.5 | 62.9 | 48.1 | 51.2 | 64.8 |
-| MRI scanner | GE, Philips, Siemens | Hitachi | Time Medical | GE, Siemens | Siemens / Hitachi |
+<h3>Dataset characteristics across sites</h3>
 
-**Pixel spacing (mm)**  
+<table>
+<tr>
+<th rowspan="2">Hospital</th>
+<th colspan="3">Training and validation</th>
+<th colspan="2">Testing</th>
+</tr>
 
-| PLA | Guizhou | Raohe | PLA test | Beian |
-|---|---|---|---|---|
-| 0.47×0.47×7.0 | 0.86×0.86×7.0 | 0.57×0.57×8.5 | 0.47×0.47×7.0 / 0.94×0.94×7.0 | 0.43×0.43×7.15 / 0.86×0.86×7.15 |
+<tr>
+<th>PLA General</th>
+<th>Guizhou Electrical</th>
+<th>Raohe County</th>
+<th>PLA General</th>
+<th>Beian Central</th>
+</tr>
 
-**Dimensions**
+<tr>
+<td>No. MRIs</td>
+<td>80,222</td>
+<td>1,230</td>
+<td>485</td>
+<td>1,392</td>
+<td>54</td>
+</tr>
 
-| PLA | Guizhou | Raohe | PLA test | Beian |
-|---|---|---|---|---|
-| 512×512×21 | 256×256×20 | 420×420×15 | 512×512×21 / 256×256×21 | 512×512×19 / 256×256×19 |
+<tr>
+<td>No. patients</td>
+<td>68,754</td>
+<td>922</td>
+<td>485</td>
+<td>1,392</td>
+<td>54</td>
+</tr>
 
+<tr>
+<td>Field strength (T)</td>
+<td>3.0</td>
+<td>0.4</td>
+<td>0.35</td>
+<td>3.0 / 0.3–0.4</td>
+<td>3.0 / 0.3</td>
+</tr>
+
+<tr>
+<td>Time</td>
+<td>2018–2023</td>
+<td>2021–2024</td>
+<td>2018–2024</td>
+<td>2023</td>
+<td>2025</td>
+</tr>
+
+<tr>
+<td>Patient age (y)</td>
+<td>56.9 ± 18</td>
+<td>55.4 ± 14</td>
+<td>N/A</td>
+<td>58.3 ± 15</td>
+<td>59.5 ± 6</td>
+</tr>
+
+<tr>
+<td>Male (%)</td>
+<td>49.5</td>
+<td>62.9</td>
+<td>48.1</td>
+<td>51.2</td>
+<td>64.8</td>
+</tr>
+
+<tr>
+<td>MRI scanner</td>
+<td>GE, Philips, Siemens</td>
+<td>Hitachi</td>
+<td>Time Medical</td>
+<td>GE, Siemens</td>
+<td>Siemens / Hitachi</td>
+</tr>
+
+<tr>
+<td>Pixel spacing (mm)</td>
+<td>0.47 × 0.47 × 7.0</td>
+<td>0.86 × 0.86 × 7.0</td>
+<td>0.57 × 0.57 × 8.5</td>
+<td>0.47 × 0.47 × 7.0 / 0.94 × 0.94 × 7.0</td>
+<td>0.43 × 0.43 × 7.15 / 0.86 × 0.86 × 7.15</td>
+</tr>
+
+<tr>
+<td>Dimensions</td>
+<td>512 × 512 × 21</td>
+<td>256 × 256 × 20</td>
+<td>420 × 420 × 15</td>
+<td>512 × 512 × 21 / 256 × 256 × 21</td>
+<td>512 × 512 × 19 / 256 × 256 × 19</td>
+</tr>
+
+</table>
 Training and validation data were collected from one tertiary hospital and two secondary hospitals. HF MRI data were acquired at the Chinese PLA General Hospital using multiple scanners.
 
 Real LF MRI data (0.35–0.4T) were collected from two secondary hospitals and used:
@@ -335,43 +535,36 @@ Lower RVE indicates better anatomical consistency.
 ### Fig S1 — Simulated LF MRI
 
 <p align="center">
-<img src="doc/result_1_2.png" width="900">
+<img src="doc/result_1_2.png" width="900"><br>
+<em>Comparison of LF-to-HF enhancement methods on simulated LF MRI. The proposed method preserves anatomical boundaries and suppresses noise.</em>
 </p>
 
-Comparison of LF→HF enhancement methods on simulated LF MRI.
-
-The proposed method preserves anatomical boundaries and suppresses noise.
 
 ---
 
 ### Fig S2 — Real LF MRI
 
 <p align="center">
-<img src="doc/result_2_2.png" width="900">
+<img src="doc/result_2_2.png" width="900"><br>
+<em>Results on real LF MRI from secondary hospitals. The proposed method generates clearer tissue contrast and fewer artifacts.</em>
 </p>
-
-Results on real LF MRI from secondary hospitals.
-
-The proposed method generates clearer tissue contrast and fewer artifacts.
 
 ---
 
 ### Fig S3 — Segmentation overlays
 
 <p align="center">
-<img src="doc/result_3_2.png" width="700">
+<img src="doc/result_3_2.png" width="700"><br>
+<em>Segmentation contours for ventricles and brainstem.</em>
 </p>
-
-Segmentation contours for ventricles and brainstem.
 
 ---
 
 ### Fig S4 — Error maps and attention
 
 <p align="center">
-<img src="doc/result_4_2.png" width="600">
+<img src="doc/result_4_2.png" width="600"><br>
+<em>The proposed method produces more localized reconstruction errors and anatomically meaningful attention.</em>
 </p>
-
-The proposed method produces more localized reconstruction errors and anatomically meaningful attention.
 
 ---
