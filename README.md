@@ -128,7 +128,7 @@ We provide pretrained checkpoints for the RePaMed model, VAE, and semantic encod
 
 | Model | Description | Download |
 |------|-------------|---------|
-| RePaMed | Model for the entire framework | Google Drive |
+| RePaMed | Model for the entire framework | [Google Drive](https://drive.google.com/file/d/1r0gMnvSUMd1vn8gfYTPL1t_24LLTYBYf/view?usp=sharing) |
 | VAE | Model for VAE to train latent diffusion | [Google Drive](https://drive.google.com/file/d/1rlwd1mVBoEg_LXMdIhk8qL4PUj87MUAw/view?usp=sharing) |
 | RepaAlign | Model for RePaAlign to align reports and images | [Google Drive](https://drive.google.com/file/d/1L4S0YLl9dyW9AyIpArMO06xqbH9hOv8V/view?usp=sharing) |
 
@@ -493,34 +493,113 @@ Training can also run on **RTX 4090** using gradient accumulation.
 
 ## Quantitative results
 
-Table S2 reports pixel-level metrics.
+<h3>Quantitative comparison on T1WI and T2WI MRI</h3>
 
-Metrics:
+<table>
+<tr>
+<th rowspan="2">Method</th>
+<th rowspan="2">Training type</th>
+<th colspan="7">T1WI</th>
+<th colspan="7">T2WI</th>
+</tr>
 
-- MSE
-- MAE
-- SSIM
-- PSNR
-- LPIPS
-- HFEN
-- GMSD
+<tr>
+<th>MSE</th>
+<th>MAE</th>
+<th>SSIM</th>
+<th>PSNR</th>
+<th>LPIPS</th>
+<th>HFEN</th>
+<th>GMSD</th>
 
-The proposed method achieves the best trade-off between structural fidelity and perceptual quality.
+<th>MSE</th>
+<th>MAE</th>
+<th>SSIM</th>
+<th>PSNR</th>
+<th>LPIPS</th>
+<th>HFEN</th>
+<th>GMSD</th>
+</tr>
+
+<tr>
+<td>DiffDeuR</td>
+<td>Unsupervised</td>
+<td>0.009</td><td>0.042</td><td>0.909</td><td>22.438</td><td>0.099</td><td>0.566</td><td>0.137</td>
+<td>0.003</td><td>0.021</td><td>0.912</td><td>27.144</td><td>0.095</td><td>0.414</td><td>0.147</td>
+</tr>
+
+<tr>
+<td>IREM</td>
+<td>Unsupervised</td>
+<td>0.007</td><td>0.036</td><td>0.937</td><td>24.385</td><td>0.086</td><td>0.416</td><td>0.115</td>
+<td>0.002</td><td>0.017</td><td>0.929</td><td>28.636</td><td>0.101</td><td>0.323</td><td>0.144</td>
+</tr>
+
+<tr>
+<td>DPS</td>
+<td>Unsupervised</td>
+<td>0.008</td><td>0.037</td><td>0.883</td><td>23.554</td><td>0.120</td><td>0.582</td><td>0.192</td>
+<td>0.002</td><td>0.018</td><td>0.909</td><td>27.759</td><td>0.099</td><td>0.442</td><td>0.164</td>
+</tr>
+
+<tr>
+<td>DiffSyn</td>
+<td>Unpaired real</td>
+<td>0.009</td><td>0.019</td><td>0.843</td><td>18.032</td><td>0.134</td><td>1.092</td><td>0.180</td>
+<td>0.003</td><td>0.016</td><td>0.848</td><td>19.025</td><td>0.130</td><td>1.004</td><td>0.195</td>
+</tr>
+
+<tr>
+<td>EA Cycle-GAN</td>
+<td>Unpaired real</td>
+<td>0.013</td><td>0.049</td><td>0.838</td><td>19.910</td><td>0.151</td><td>0.912</td><td>0.225</td>
+<td>0.008</td><td>0.041</td><td>0.815</td><td>21.731</td><td>0.151</td><td>0.541</td><td>0.198</td>
+</tr>
+
+<tr>
+<td>SFnet</td>
+<td>Simulated paired</td>
+<td>0.002</td><td>0.019</td><td>0.935</td><td>27.854</td><td>0.063</td><td>0.356</td><td>0.178</td>
+<td>0.002</td><td>0.016</td><td>0.925</td><td>28.255</td><td>0.073</td><td>0.334</td><td>0.140</td>
+</tr>
+
+<tr>
+<td>PDM</td>
+<td>Simulated paired</td>
+<td>0.009</td><td>0.042</td><td>0.924</td><td>23.103</td><td>0.087</td><td>0.471</td><td>0.132</td>
+<td>0.002</td><td>0.019</td><td>0.930</td><td>28.327</td><td>0.082</td><td>0.320</td><td>0.132</td>
+</tr>
+
+<tr>
+<td>Stoch-IQT</td>
+<td>Simulated paired</td>
+<td>0.003</td><td>0.024</td><td>0.929</td><td>26.955</td><td>0.096</td><td>0.380</td><td>0.134</td>
+<td>0.002</td><td>0.014</td><td>0.930</td><td>28.847</td><td>0.084</td><td>0.286</td><td>0.134</td>
+</tr>
+
+<tr>
+<td><b>Ours</b></td>
+<td>Simulated paired</td>
+<td><b>0.002</b></td><td><b>0.018</b></td><td><b>0.947</b></td><td><b>29.570</b></td><td><b>0.038</b></td><td><b>0.348</b></td><td><b>0.115</b></td>
+<td><b>0.001</b></td><td><b>0.013</b></td><td><b>0.941</b></td><td><b>30.706</b></td><td><b>0.045</b></td><td><b>0.282</b></td><td><b>0.127</b></td>
+</tr>
+
+</table>
 
 ---
 
 ## Structural consistency
 
-Table S3 reports **Relative Volume Error (RVE)** for six brain tissues:
+Lower values indicate better volumetric consistency with the high-field reference.
 
-- White matter
-- Cortical gray matter
-- Subcortical nuclei
-- Cerebellum
-- Brainstem
-- Ventricle
-
-Lower RVE indicates better anatomical consistency.
+| Tissue | LF | DiffDeuR | IREM | DPS | DiffSyn | EA Cycle-GAN | SFnet | PDM | Stoch-IQT | Ours |
+|------|------|------|------|------|------|------|------|------|------|------|
+| White matter | 0.264 | 0.058 | 0.235 | 0.069 | 0.215 | 0.483 | 0.533 | 0.225 | 0.385 | **0.178** |
+| Cortical gray matter | 0.278 | 0.589 | 0.158 | 0.664 | 0.419 | 0.416 | 0.590 | 0.162 | 0.528 | **0.128** |
+| Subcortical nuclei | 0.343 | 0.139 | 0.293 | 0.079 | 0.656 | 0.491 | 0.164 | 0.288 | 0.302 | **0.259** |
+| Cerebellum | 0.212 | 0.669 | 0.129 | 0.467 | 0.591 | 0.264 | 1.037 | 0.127 | 0.177 | **0.137** |
+| Brainstem | 0.241 | 0.259 | 0.232 | 0.277 | 0.403 | 0.530 | 0.348 | 0.247 | 0.246 | **0.177** |
+| Ventricle | 0.908 | 1.191 | 0.849 | 0.804 | 0.586 | 1.629 | 0.857 | 0.857 | 0.957 | **0.407** |
 
 ---
 
