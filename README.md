@@ -72,7 +72,7 @@ This allows the model to enhance MRI images while preserving clinically relevant
 - MRI–report multimodal alignment
 - Region-guided representation learning
 - Diffusion-based reconstruction
-- Designed for **low-field brain MRI enhancement**
+- Designed for **low-field brain MRI enhancement (T1WI and T2WI)**
 
 ---
 
