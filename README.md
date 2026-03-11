@@ -1,3 +1,35 @@
+# Pathology-Aware Latent Diffusion for Low-Field Brain MRI Enhancement
+[![Paper](https://img.shields.io/badge/Paper-TMI-blue)]()
+[![Python](https://img.shields.io/badge/Python-3.9-green)]()
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange)]()
+
+Official implementation of the paper:
+
+**Pathology-Aware Latent Diffusion for Low-Field Brain MRI Enhancement**  
+Dong Zhang, Caohui Duan, Xiaonan Xu, Youmin Li, Junming Huang, Chao Wang, Z. Jane Wang, Xin Lou  
+IEEE Transactions on Medical Imaging (TMI)
+
+---
+
+## Overview
+
+Low-field MRI (LF-MRI) improves imaging accessibility and reduces hardware cost, but suffers from reduced signal-to-noise ratio (SNR) and degraded anatomical detail.
+
+Most existing enhancement approaches rely solely on image supervision and may fail to preserve pathology-relevant structures.
+
+We propose **RePaMed**, a **pathology-aware latent diffusion framework** that integrates **diagnostic report semantics** to guide MRI enhancement.
+
+The key idea is to align **region-level MRI representations with diagnostic report semantics**, and incorporate the aligned representations into a **diffusion-based reconstruction model**.
+
+---
+
+## Framework
+
+<p align="center">
+<img src="docs/fig2.png" width="85%">
+</p>
+
+
 
 
 # Supplementary Material  
