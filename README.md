@@ -7,7 +7,7 @@ Official implementation of the paper:
 
 **Pathology-Aware Latent Diffusion for Low-Field Brain MRI Enhancement**  
 Dong Zhang, Caohui Duan, Xiaonan Xu, Youmin Li, Junming Huang, Chao Wang, Z. Jane Wang, Xin Lou  
-IEEE Transactions on Medical Imaging (TMI)
+Submitted to IEEE Transactions on Medical Imaging (TMI)
 
 ---
 
