@@ -119,8 +119,6 @@ def main():
     diffusion.to(device).eval()
     print("pretrained model loaded")
 
-    all_rows = []
-
     with torch.no_grad():
         for bi, batch in enumerate(test_loader):
 
@@ -180,7 +178,7 @@ def main():
                 hf_t2 = hf_image[:, 1:2, :, :]
 
                 brain_mask_t1 = ((hf_synth_t1 > 0) & (sr_t1 > 0)).float()
-                brain_mask_t2 = ((hf_synth_t1 > 0) & (sr_t1 > 0)).float()
+                brain_mask_t2 = ((hf_synth_t2 > 0) & (sr_t2 > 0)).float()
 
                 hf_t1 = hf_t1 * brain_mask_t1
                 hf_t2 = hf_t2 * brain_mask_t2
@@ -201,7 +199,6 @@ def main():
 
                 sr_image = torch.cat([sr_t1, sr_t2], dim=1)
 
-                print("hf_synth_t1 1", hf_synth_t1.shape)
                 hf_synth_t1 = hf_synth_t1[0].numpy().astype(np.float32)
                 hf_synth_t2 = hf_synth_t2[0].numpy().astype(np.float32)
 
@@ -214,8 +211,6 @@ def main():
                 hf_synth_t1 = hf_synth_t1.transpose(1, 2, 0)
                 hf_synth_t2 = hf_synth_t2.transpose(1, 2, 0)
 
-                print("hf_synth_t1 2", hf_synth_t1.shape)
-
                 hf_t1 = hf_t1.transpose(1, 2, 0)
                 hf_t2 = hf_t2.transpose(1, 2, 0)
 
@@ -227,22 +222,6 @@ def main():
 
                 nib.save(hf_synth_t1_nii, os.path.join(saved_path, name.replace("HF_T1", "Syn_T1")))
                 nib.save(hf_synth_t2_nii, os.path.join(saved_path, name.replace("HF_T1", "Syn_T2")))
-
-    if all_rows:
-        arr = np.array([[r["psnr"], r["ssim"]]
-                        for r in all_rows], dtype=float)
-        mean = arr.mean(axis=0)
-        print("\n=== Final ===")
-        print(f"PSNR={mean[0]:.2f} SSIM={mean[1]:.4f}")
-
-
-        # write CSV
-        csv_path = os.path.join(args.save_root, "batch_metrics.csv")
-        df = pd.DataFrame(all_rows, columns=[
-            "batch_idx", "psnr", "ssim",
-        ])
-        df.to_csv(csv_path, index=False)
-        print(f"[Saved] Per-batch metrics → {csv_path}")
 
 if __name__ == "__main__":
     main()
